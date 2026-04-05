@@ -1,5 +1,12 @@
 name: Assemble jre
-on: workflow_dispatch
+
+on:
+  push:
+    tags:
+      - "jre*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
   assemble-jre:
@@ -76,16 +83,8 @@ jobs:
           zip -r jre.zip jre
           du -h jre.zip
 
-      - name: Upload binaries
-        uses: skx/github-action-publish-binaries@v0.14
-        with:
-          args: 'jre.zip'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create jre release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create ${{ github.action_ref }} \
-              --title "Release for jre ${{ github.action_ref }}" \
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            jre.zip
