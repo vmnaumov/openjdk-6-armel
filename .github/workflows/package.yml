@@ -1,4 +1,4 @@
-name: Assemble jre
+name: Assemble jre package
 
 on:
   push:
@@ -9,7 +9,13 @@ permissions:
   contents: write
 
 jobs:
-  assemble-jre:
+  assemble-package:
+    strategy:
+      matrix:
+        include:
+          - arch: "armel"
+          - arch: "armhf"
+          - arch: "amd64"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

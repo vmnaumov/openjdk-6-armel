@@ -9,11 +9,17 @@ jobs:
         include:
           - arch: "armel"
             lib_arch: "arm-linux-gnueabi"
+            lib_folder: "arm"
           - arch: "armhf"
             lib_arch: "arm-linux-gnueabihf"
+            lib_folder: "arm"
+          - arch: "amd64"
+            lib_arch: "x86_64-linux-gnu"
+            lib_folder: "amd64"
     env:
       ARCH: ${{ matrix.arch }}
       LIB_ARCH: ${{ matrix.lib_arch }}
+      LIB_FOLDER: ${{ matrix.lib_folder }}
       OPENJDK_JRE_PACKAGE: "https://snapshot.debian.org/archive/debian/20170518T093838Z/pool/main/o/openjdk-6/openjdk-6-jre_6b41-1.13.13-1_${{ matrix.arch }}.deb"
       OPENJDK_JRE_HEADLESS_PACKAGE: "https://snapshot.debian.org/archive/debian/20170518T093838Z/pool/main/o/openjdk-6/openjdk-6-jre-headless_6b41-1.13.13-1_${{ matrix.arch }}.deb"
       OPENJDK_JRE_LIB_PACKAGE: "https://snapshot.debian.org/archive/debian/20170518T034509Z/pool/main/o/openjdk-6/openjdk-6-jre-lib_6b41-1.13.13-1_all.deb"
@@ -63,37 +69,40 @@ jobs:
           cp -r openjdk-jre-headless/* openjdk-jre/
           rm -rf openjdk-jre-headless
           
-          rm openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/cmm
+          rm openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/cmm
           cp --remove-destination -r openjdk-jre-lib/usr/lib/jvm/java-6-openjdk-common/jre/* \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre
           rm -rf openjdk-jre-lib
           
-          cp --remove-destination openjdk-jre/etc/java-6-openjdk/jvm-${{ env.ARCH}}.cfg \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/arm/jvm.cfg
-          cp --remove-destination openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/arm/libjsig.so \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/arm/server/libjsig.so
+          ls openjdk-jre/etc/java-6-openjdk/*.cfg
+          ls openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib
+          cp --remove-destination openjdk-jre/etc/java-6-openjdk/jvm-${{ env.ARCH }}.cfg \
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/${{ env.LIB_FOLDER }}/jvm.cfg
+          cp --remove-destination openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/${{ env.LIB_FOLDER }}/libjsig.so \
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/${{ env.LIB_FOLDER }}/server/libjsig.so
           
           cp --remove-destination -r openjdk-jre/etc/java-6-openjdk/* \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib
           
           cp --remove-destination libatk-wrapper-java/usr/share/java/java-atk-wrapper.jar \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/ext
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/ext
           rm -rf libatk-wrapper-java
           
-          cp --remove-destination libatk-wrapper-java-jni/usr/lib/$LIB_ARCH/jni/libatk-wrapper.so.6.0.0 \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/ext/libatk-wrapper.so
+          ls libatk-wrapper-java-jni/usr/lib/
+          cp --remove-destination libatk-wrapper-java-jni/usr/lib/${{ env.LIB_ARCH }}/jni/libatk-wrapper.so.6.0.0 \
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/ext/libatk-wrapper.so
           rm -rf libatk-wrapper-java-jni
           
           cp --remove-destination media-types/etc/mime.types \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib
           rm -rf media-types
           cp --remove-destination ca-certificates-java/etc/default/cacerts \
-            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/lib/security
+            openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/lib/security
           rm -rf ca-certificates-java
           
-          rm -rf openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre/man/ja*
+          rm -rf openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre/man/ja*
           
-          cp -r openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH}}/jre jre
+          cp -r openjdk-jre/usr/lib/jvm/java-6-openjdk-${{ env.ARCH }}/jre jre
           rm -rf openjdk-jre
           
           du -d 2 -h jre
